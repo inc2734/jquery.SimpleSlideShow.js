@@ -1,9 +1,12 @@
 <!--
-#simpleSlideShow {
+.simpleSlideShow img {
+	display : none;
+}
+.simpleSlideShowWrapper {
 	margin : 0 auto;
 	position : relative;
 }
-#simpleSlideShow img {
+.simpleSlideShowWrapper img {
 	position : absolute;
 	left : 0;
 	top : 0;
