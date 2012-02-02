@@ -11,7 +11,7 @@
 		canvas.find('img').hide();
 		$(window).load( function() {
 			canvas.wrapInner('<div class="simpleSlideShowWrapper"></div>');
-			var simpleSlideShow = $('.simpleSlideShowWrapper');
+			var simpleSlideShow = canvas.find('.simpleSlideShowWrapper');
 			var defaults = {
 				height : simpleSlideShow.find('img:first').height(),
 				width  : simpleSlideShow.find('img:first').width(),
@@ -26,15 +26,17 @@
 			});
 			var cnt = simpleSlideShow.find('img').length;
 			var i = 0;
-			setInterval( function() {
-				var img = simpleSlideShow.find('img').eq( i );
-				i ++;
-				img.fadeOut(config.duration);
-				if ( i >= cnt ) {
-					i = 0;
-				}
-				simpleSlideShow.find('img').eq( i ).fadeIn( config.duration );
-			}, config.interval );
+			if ( cnt > 1 ) {
+				setInterval( function() {
+					var img = simpleSlideShow.find('img').eq( i );
+					i ++;
+					img.fadeOut(config.duration);
+					if ( i >= cnt ) {
+						i = 0;
+					}
+					simpleSlideShow.find('img').eq( i ).fadeIn( config.duration );
+				}, config.interval );
+			}
 		});
 	};
 })( jQuery );
