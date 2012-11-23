@@ -1,10 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.3
+ * Version: 0.4
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
- * modified : May 12, 2012
+ * Created : Sep 30, 2011
+ * Modified : November 22, 2012
  * License: GPL2
  *
  * Copyright 2012 Takashi Kitajima (email : inc@2inc.org)
@@ -22,43 +23,81 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * 
- * @param	Numeric	height	高さ（初期値：1枚目の画像の高さ）
- * 			Numeric width	横幅（初期値：1枚目の画像の横幅）
- * 			Numeric duration	アニメーション時間（ms）
- * 			Numeric interval	次のアニメーションまでのインターバル（ms）
+ * @param	Numeric	duration	アニメーション時間（ms）
+ * 			Numeric	interval	次のアニメーションまでのインターバル（ms）
+ * 			Boolean	showNav		ナビゲーションの表示
  */
 ( function( $ ) {
 	$.fn.SimpleSlideShow = function( config ) {
-		var canvas = $(this);
-		canvas.find('img').hide();
-		$(window).load( function() {
-			canvas.wrapInner('<div class="simpleSlideShowWrapper"></div>');
-			var simpleSlideShow = canvas.find('.simpleSlideShowWrapper');
-			var defaults = {
-				height : simpleSlideShow.find('img:first').height(),
-				width  : simpleSlideShow.find('img:first').width(),
-				duration : 1000,
-				interval : 3000
-			};
-			config = $.extend( defaults, config );
-			simpleSlideShow.find('img:first').show();
-			simpleSlideShow.css({
-				'height' : config.height,
-				'width' : config.width
-			});
-			var cnt = simpleSlideShow.find('img').length;
-			var i = 0;
-			if ( cnt > 1 ) {
-				setInterval( function() {
-					var img = simpleSlideShow.find('img').eq( i );
-					i ++;
-					img.fadeOut(config.duration);
-					if ( i >= cnt ) {
-						i = 0;
+		var canvas = $( this );
+		canvas.find( 'img' ).hide();
+		canvas.wrapInner( '<div class="simpleSlideShowWrapper"></div>' );
+		var simpleSlideShow = canvas.find( '.simpleSlideShowWrapper' );
+		var cnt = simpleSlideShow.find( 'img' ).length;
+		var timer = null;
+		var defaults = {
+			duration : 1000,
+			interval : 3000,
+			showNav  : false
+		};
+		config = $.extend( defaults, config );
+		
+		var methods = {
+			lotation: function( key ) {
+				clearTimeout( timer );
+				canvas.find( 'img' ).hide();
+				simpleSlideShow.find( 'img' ).eq( key ).show();
+				var fade = function() {
+					simpleSlideShow.find( 'img' ).eq( key ).fadeOut( config.duration );
+					key ++;
+					if ( key >= cnt ) {
+						key = 0;
 					}
-					simpleSlideShow.find('img').eq( i ).fadeIn( config.duration );
-				}, config.interval );
+					simpleSlideShow.find( 'img' ).eq( key ).fadeIn( config.duration );
+					methods.setCurrentClass( key );
+					timer = setTimeout( fade, config.interval );
+				};
+				timer = setTimeout( fade, config.interval );
+			},
+			setCurrentClass: function( key ) {
+				if ( config.showNav === true ) {
+					$( '.simpleSlideShowNav ul li' ).removeClass( 'cur' );
+					$( '.simpleSlideShowNav ul li' ).eq( key ).addClass( 'cur' );
+				}
+			},
+			setSimpleSlideShowSize: function() {
+				simpleSlideShow.css( {
+					height : simpleSlideShow.find( 'img:first' ).height(),
+					width  : simpleSlideShow.find( 'img:first' ).width()
+				} );
 			}
-		});
+		};
+				
+		return this.each( function() {
+			$( window ).load( function() {
+				if ( cnt > 1 ) {
+					methods.setSimpleSlideShowSize();
+					methods.lotation( 0 );
+				}
+				
+				if ( config.showNav === true ) {
+					var nav = '';
+					for ( i = 1; i <= cnt; i ++ ) {
+						nav += '<li class="nav_' + i + '" data-key="' + i + '">' + i + '</li>';
+					}
+					if ( nav ) {
+						nav = '<div class="simpleSlideShowNav"><ul>' + nav + '</ul></div>';
+						canvas.append( nav );
+						methods.setCurrentClass( 0 );
+						$( '.simpleSlideShowNav ul li' ).live( 'click', function() {
+							var key = $( this ).data( 'key' );
+							methods.setSimpleSlideShowSize();
+							methods.setCurrentClass( key - 1 );
+							methods.lotation( key - 1 );
+						} );
+					}
+				}
+			} );
+		} );
 	};
 })( jQuery );
