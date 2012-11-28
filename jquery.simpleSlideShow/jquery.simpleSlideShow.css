@@ -12,3 +12,10 @@
 	left : 0;
 	top : 0;
 }
+.simpleSlideShowNav ul li {
+	cursor : pointer;
+}
+
+.simpleSlideShowCaption {
+	display : none;
+}
