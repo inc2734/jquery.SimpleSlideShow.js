@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.5.2
+ * Version: 0.6
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
- * Modified : March 7, 2013
+ * Modified : July 12, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -40,6 +40,7 @@
 		var timer = null;
 		var fading = false;
 		var defaults = {
+			type        : 'fade',
 			duration    : 1000,
 			interval    : 3000,
 			showNav     : false,
@@ -54,6 +55,18 @@
 					key = 1;
 				}
 				clearTimeout( timer );
+
+				var slide = function() {
+					fading = true;
+					images.css( 'left', 0 );
+					images.eq( key ).css( 'left', -simpleSlideShow.width() );
+					images.animate( {
+						'left': simpleSlideShow.width()
+					}, config.duration, function() {
+						fading = false;
+					} );
+				}
+
 				var fade = function() {
 					fading = true;
 					images.fadeOut( config.duration );
@@ -70,7 +83,14 @@
 						timer = setTimeout( fade, config.interval );
 					}
 				}
-				fade();
+
+				switch ( config.type ) {
+					case 'slide' :
+						slide();
+					case 'fade' :
+					default :
+						fade();
+				}
 			},
 			setCurrentClass: function( key ) {
 				if ( config.showNav === true ) {
