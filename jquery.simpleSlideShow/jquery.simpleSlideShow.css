@@ -1,7 +1,10 @@
 @charset "utf-8"
 
-.simpleSlideShow img {
+.fade img {
 	display : none;
+}
+.slide {
+	overflow: hidden;
 }
 .simpleSlideShowWrapper {
 	margin : 0 auto;

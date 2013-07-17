@@ -23,22 +23,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @param	Numeric		duration		アニメーション時間（ms）
- * 			Numeric		interval		次のアニメーションまでのインターバル（ms）
- * 			Boolean		showNav			ナビゲーションの表示
+ * @param	String		Type( fade, slide )			切り替えアニメーション
+ * 			Numeric		duration					アニメーション時間（ms）
+ * 			Numeric		interval					次のアニメーションまでのインターバル（ms）
+ * 			Boolean		showNav						ナビゲーションの表示
  * 			String		navStyle( string, image )	ナビゲーション種別
- * 			Boolean		showCaption		キャプションの表示
+ * 			Boolean		showCaption					キャプションの表示
  */
 ;( function( $ ) {
 	$.fn.SimpleSlideShow = function( config ) {
 		var canvas = $( this );
-		canvas.find( 'img' ).hide();
 		canvas.wrapInner( '<div class="simpleSlideShowWrapper"></div>' );
 		var simpleSlideShow = canvas.find( '.simpleSlideShowWrapper' );
 		var cnt = simpleSlideShow.find( 'img' ).length;
 		var images = simpleSlideShow.find( 'img' );
 		var timer = null;
 		var fading = false;
+		var now = 0;
 		var defaults = {
 			type        : 'fade',
 			duration    : 1000,
@@ -48,60 +49,63 @@
 			showCaption : false
 		};
 		config = $.extend( defaults, config );
+		simpleSlideShow.addClass( config.type );
 
 		var methods = {
+			start: function( key ) {
+				methods.showCaption( key - 1 );
+				methods.setCurrentClass( key - 1 );
+				if ( cnt > 1 && config.interval > 0 ) {
+					timer = setTimeout( function() {
+						methods.lotation( key )
+					}, config.interval );
+				}
+			},
 			lotation: function( key ) {
-				if ( typeof key === 'undefined' ) {
-					key = 1;
-				}
 				clearTimeout( timer );
-
-				var slide = function() {
-					fading = true;
-					images.css( 'left', 0 );
-					images.eq( key ).css( 'left', -simpleSlideShow.width() );
-					images.animate( {
-						'left': simpleSlideShow.width()
-					}, config.duration, function() {
-						fading = false;
-					} );
+				switch ( config.type ) {
+					case 'slide' :
+						methods.type.slide( key );
+						break;
+					case 'fade' :
+					default :
+						methods.type.fade( key );
 				}
-
-				var fade = function() {
+				key ++;
+				var target = key % cnt;
+				methods.start( target );
+			},
+			type: {
+				fade: function( key ) {
 					fading = true;
 					images.fadeOut( config.duration );
 					images.eq( key ).fadeIn( config.duration, function() {
 						fading = false;
+						now = key;
 					} );
-					methods.showCaption( key );
-					methods.setCurrentClass( key );
-					key ++;
-					if ( key >= cnt ) {
-						key = 0;
-					}
-					if ( cnt > 1 && config.interval > 0 ) {
-						timer = setTimeout( fade, config.interval );
-					}
-				}
-
-				switch ( config.type ) {
-					case 'slide' :
-						slide();
-					case 'fade' :
-					default :
-						fade();
+				},
+				slide: function( key ) {
+					fading = true;
+					images.eq( key ).css( 'left', -simpleSlideShow.width() );
+					images.animate( {
+						'left': '+=' + simpleSlideShow.width()
+					}, config.duration, function() {
+						fading = false;
+						now = key;
+					} );
 				}
 			},
 			setCurrentClass: function( key ) {
 				if ( config.showNav === true ) {
-					canvas.find( '.simpleSlideShowNav ul li' ).removeClass( 'cur' );
-					canvas.find( '.simpleSlideShowNav ul li' ).eq( key ).addClass( 'cur' );
+					canvas.find( '.simpleSlideShowNav ul li' )
+						.removeClass( 'cur' )
+						.eq( key ).addClass( 'cur' );
 				}
 			},
 			setSimpleSlideShowSize: function() {
 				simpleSlideShow.css( {
-					height : simpleSlideShow.find( 'img:first' ).height(),
-					width  : simpleSlideShow.find( 'img:first' ).width()
+					height: simpleSlideShow.find( 'img:first' ).height(),
+					width : simpleSlideShow.find( 'img:first' ).width()
 				} );
 			},
 			showCaption: function( key ) {
@@ -115,26 +119,32 @@
 						var caption = img.attr( 'title' );
 					}
 					if ( caption ) {
-						simpleSlideShow.after( '<div class="simpleSlideShowCaptionWrapper"></div>' );
-						canvas.find( '.simpleSlideShowCaptionWrapper' ).html( caption );
+						simpleSlideShow.after(
+							$( '<div class="simpleSlideShowCaptionWrapper" />' )
+								.html( caption )
+						);
 					}
 				}
 			},
 			createSimpleSlideShowNav: function() {
-				var nav = '';
+				var simpleSlideShowNav = $( '<div class="simpleSlideShowNav" />' ).append( $( '<ul />' ) );
 				for ( i = 1; i <= cnt; i ++ ) {
 					if ( config.navStyle == 'string' ) {
 						var navhtml = i;
 					} else if ( config.navStyle == 'image' ) {
-						var navhtml = '<img src="' + canvas.find( 'img' ).eq( i - 1 ).attr( 'src' ) + '" alt="' + i + '" />';
+						var navhtml = $( '<img />' ).attr( {
+							src: canvas.find( 'img' ).eq( i - 1 ).attr( 'src' ),
+							alt: i
+						} );
 					}
 					if ( typeof navhtml !== 'undefined' ) {
-						nav += '<li class="nav_' + i + '" data-key="' + i + '">' + navhtml + '</li>';
+						var nav = $( '<li />' )
+								.addClass( 'nav_' + i )
+								.data( 'key', ( i - 1 ) )
+								.append( navhtml );
+						simpleSlideShowNav.find( 'ul' ).append( nav );
+						canvas.append( simpleSlideShowNav );
 					}
-				}
-				if ( nav ) {
-					nav = '<div class="simpleSlideShowNav"><ul>' + nav + '</ul></div>';
-					canvas.append( nav );
 				}
 			}
 		};
@@ -143,22 +153,27 @@
 			$( window ).load( function() {
 				if ( config.showNav === true ) {
 					methods.createSimpleSlideShowNav();
-					canvas.find( '.simpleSlideShowNav ul li' ).live( 'click', function() {
+					canvas.find( '.simpleSlideShowNav ul li' ).on( 'click', function() {
 						if ( ! $( this ).hasClass( 'cur' ) && fading === false && cnt > 1 ) {
 							var key = $( this ).data( 'key' );
-							methods.lotation( key - 1 );
+							methods.lotation( key );
 						}
 					} );
 				}
 
 				methods.setSimpleSlideShowSize();
-				images.hide();
-				images.eq( 0 ).show();
-				methods.showCaption( 0 );
-				methods.setCurrentClass( 0 );
-				if ( cnt > 1 && config.interval > 0 ) {
-					timer = setTimeout( methods.lotation, config.interval );
+				switch ( config.type ) {
+					case 'slide' :
+						images.show();
+						images.each( function( i, e ) {
+							$( e ).css( 'left', -i * simpleSlideShow.width() );
+						} );
+						break;
+					case 'fade' :
+					default :
+						images.eq( 0 ).show();
 				}
+				methods.start( 1 );
 			} );
 		} );
 	};
