@@ -1,24 +1,24 @@
-@charset "utf-8"
+@charset "utf-8";
 
 .fade img {
-	display : none;
+	display: none;
 }
 .slide {
 	overflow: hidden;
 }
 .simpleSlideShowWrapper {
-	margin : 0 auto;
-	position : relative;
+	margin: 0 auto;
+	position: relative;
 }
 .simpleSlideShowWrapper img {
 	position : absolute;
-	left : 0;
-	top : 0;
+	left: 0;
+	top: 0;
 }
 .simpleSlideShowNav ul li {
-	cursor : pointer;
+	cursor: pointer;
 }
 
 .simpleSlideShowCaption {
-	display : none;
+	display: none;
 }

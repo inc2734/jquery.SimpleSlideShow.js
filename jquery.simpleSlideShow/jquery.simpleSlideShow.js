@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.6
+ * Version: 0.6.1
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
- * Modified : July 12, 2013
+ * Modified : July 18, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -38,15 +38,15 @@
 		var cnt = simpleSlideShow.find( 'img' ).length;
 		var images = simpleSlideShow.find( 'img' );
 		var timer = null;
-		var fading = false;
+		var moving = false;
 		var now = 0;
 		var defaults = {
-			type        : 'fade',
-			duration    : 1000,
-			interval    : 3000,
-			showNav     : false,
-			navStyle    : 'string',
-			showCaption : false
+			type       : 'fade',
+			duration   : 1000,
+			interval   : 3000,
+			showNav    : false,
+			navStyle   : 'string',
+			showCaption: false
 		};
 		config = $.extend( defaults, config );
 		simpleSlideShow.addClass( config.type );
@@ -77,20 +77,20 @@
 			},
 			type: {
 				fade: function( key ) {
-					fading = true;
+					moving = true;
 					images.fadeOut( config.duration );
 					images.eq( key ).fadeIn( config.duration, function() {
-						fading = false;
+						moving = false;
 						now = key;
 					} );
 				},
 				slide: function( key ) {
-					fading = true;
+					moving = true;
 					images.eq( key ).css( 'left', -simpleSlideShow.width() );
 					images.animate( {
 						'left': '+=' + simpleSlideShow.width()
 					}, config.duration, function() {
-						fading = false;
+						moving = false;
 						now = key;
 					} );
 				}
@@ -154,7 +154,7 @@
 				if ( config.showNav === true ) {
 					methods.createSimpleSlideShowNav();
 					canvas.find( '.simpleSlideShowNav ul li' ).on( 'click', function() {
-						if ( ! $( this ).hasClass( 'cur' ) && fading === false && cnt > 1 ) {
+						if ( ! $( this ).hasClass( 'cur' ) && moving === false && cnt > 1 ) {
 							var key = $( this ).data( 'key' );
 							methods.lotation( key );
 						}
