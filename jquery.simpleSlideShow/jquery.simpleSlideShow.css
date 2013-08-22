@@ -15,7 +15,8 @@
 	left: 0;
 	top: 0;
 }
-.simpleSlideShowNav ul li {
+.simpleSlideShowNav ul li,
+.simpleSlideShowPrevNextNav ul li {
 	cursor: pointer;
 }
 
