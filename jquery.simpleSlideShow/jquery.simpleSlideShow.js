@@ -1,7 +1,7 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.1
+ * Version: 0.7.2
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
@@ -32,6 +32,7 @@
  * 			Boolean		showPrevNextNav				前後ナビの表示
  * 			String		prev_text					前ナビの文字列
  * 			String		next_text					後ナビの文字列
+ * 			Boolean		autoResize					自動リサイズ実行
  */
 ;( function( $ ) {
 	$.fn.SimpleSlideShow = function( config ) {
@@ -44,7 +45,8 @@
 			showCaption    : false,
 			showPrevNextNav: false,
 			prev_text      : '&laquo;',
-			next_text      : '&raquo;'
+			next_text      : '&raquo;',
+			autoResize     : false
 		};
 		config = $.extend( defaults, config );
 
@@ -195,6 +197,11 @@
 						height: simpleSlideShowInner.find( 'img:first' ).height(),
 						width : simpleSlideShowInner.find( 'img:first' ).width()
 					} );
+					if ( config.autoResize === true ) {
+						var simpleSlideShowTimer = setTimeout( function() {
+							methods.setSimpleSlideShowInnerSize();
+						}, 1000 );
+					}
 				},
 				showCaption: function( key ) {
 					if ( config.showCaption === true ) {
