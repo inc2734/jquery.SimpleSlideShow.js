@@ -3,14 +3,14 @@
 .fade img {
 	display: none;
 }
-.slide {
-	overflow: hidden;
-}
 .simpleSlideShowWrapper {
+}
+.simpleSlideShowInner {
 	margin: 0 auto;
 	position: relative;
+	overflow: hidden;
 }
-.simpleSlideShowWrapper img {
+.simpleSlideShowInner img {
 	position : absolute;
 	left: 0;
 	top: 0;

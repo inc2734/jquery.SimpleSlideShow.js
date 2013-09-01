@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.2
+ * Version: 0.7.3
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
- * Modified : August 23, 2013
+ * Modified : September 1, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
