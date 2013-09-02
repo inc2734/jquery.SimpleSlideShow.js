@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.3
+ * Version: 0.7.4
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
- * Modified : September 1, 2013
+ * Modified : Sep 2, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -62,6 +62,7 @@
 			var moving = false;
 			var now = 0;
 			var slideDirection;
+			images.hide();
 			if ( config.showNav === true ) {
 				canvas.append( '<div class="simpleSlideShowNav" />' );
 				var simpleSlideShowNav = canvas.find( '.simpleSlideShowNav' );
@@ -230,7 +231,7 @@
 							var navhtml = $( '<img />' ).attr( {
 								src: canvas.find( 'img' ).eq( i - 1 ).attr( 'src' ),
 								alt: i
-							} );
+							} ).css( 'display', 'inline' );
 						}
 						if ( typeof navhtml !== 'undefined' ) {
 							var nav = $( '<li />' )
