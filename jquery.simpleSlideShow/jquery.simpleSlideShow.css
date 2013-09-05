@@ -1,5 +1,8 @@
 @charset "utf-8";
 
+._defaultSize {
+	overflow: hidden;
+}
 .fade img {
 	display: none;
 }
