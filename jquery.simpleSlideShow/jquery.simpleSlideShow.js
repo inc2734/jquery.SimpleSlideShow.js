@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.5
+ * Version: 0.7.6
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : Sep 30, 2011
- * Modified : Sep 5, 2013
+ * Modified : September 17, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -57,13 +57,20 @@
 			var simpleSlideShow = canvas.find( '.simpleSlideShowWrapper' );
 			simpleSlideShow.wrapInner( '<div class="simpleSlideShowInner" />' );
 			var simpleSlideShowInner = canvas.find( '.simpleSlideShowInner' );
-			var cnt = simpleSlideShowInner.find( 'img' ).length;
-			var images = simpleSlideShowInner.find( 'img' );
+			var cnt = simpleSlideShowInner.find( 'img, iframe' ).length;
+			var images = simpleSlideShowInner.find( 'img, iframe' );
 			var timer = null;
 			var moving = false;
 			var now = 0;
+			var clickCount = 0;
 			var slideDirection;
 			images.hide();
+			if ( config.showCaption === true ) {
+				simpleSlideShowInner.after(
+					$( '<div class="simpleSlideShowCaptionWrapper" />' )
+				);
+				var simpleSlideShowCaptionWrapper = canvas.find( '.simpleSlideShowCaptionWrapper' );
+			}
 			if ( config.showNav === true ) {
 				canvas.append( '<div class="simpleSlideShowNav" />' );
 				var simpleSlideShowNav = canvas.find( '.simpleSlideShowNav' );
@@ -147,14 +154,21 @@
 				},
 				type: {
 					fade: function( key ) {
+						methods.processBeforeMove( key );
 						moving = true;
 						images.fadeOut( config.duration );
 						images.eq( key ).fadeIn( config.duration, function() {
 							methods.processAfterMove( key );
 						} );
 					},
-					slideLeft: function( key ) {
+					_slideBeforeInit: function( key ) {
+						methods.processBeforeMove( key );
+						clickCount ++;
 						moving = true;
+						images.eq( key ).css( 'z-index', clickCount );
+					},
+					slideLeft: function( key ) {
+						methods.type._slideBeforeInit( key );
 						images.eq( key ).css( 'left', -simpleSlideShowInner.width() );
 						images.stop( true, true ).animate( {
 							'left': '+=' + simpleSlideShowInner.width()
@@ -163,14 +177,25 @@
 						} );
 					},
 					slideRight: function( key ) {
+						methods.type._slideBeforeInit( key );
 						slideDirection = 'left'
-						moving = true;
 						images.eq( key ).css( 'left', +simpleSlideShowInner.width() );
 						images.stop( true, true ).animate( {
 							'left': '-=' + simpleSlideShowInner.width()
 						}, config.duration, function() {
 							methods.processAfterMove( key );
 						} );
+					}
+				},
+				processBeforeMove: function( key ) {
+					if ( typeof simpleSlideShowCaptionWrapper !== 'undefined' ) {
+						simpleSlideShowCaptionWrapper.css( 'z-index', clickCount + 2 );
+					}
+					if ( typeof simpleSlideShowNav !== 'undefined' ) {
+						simpleSlideShowNav.css( 'z-index', clickCount + 2 );
+					}
+					if ( typeof simpleSlideShowPrevNextNav !== 'undefined' ) {
+						simpleSlideShowPrevNextNav.css( 'z-index', clickCount + 2 );
 					}
 				},
 				processAfterMove: function( key ) {
@@ -207,42 +232,55 @@
 				},
 				showCaption: function( key ) {
 					if ( config.showCaption === true ) {
-						canvas.find( '.simpleSlideShowCaptionWrapper' ).remove();
+						simpleSlideShowCaptionWrapper.hide();
 						var img = images.eq( key );
 						var captionhtml = img.data( 'caption' );
-						if ( captionhtml ) {
-							var caption = $( '<span />' ).append( $( '#' + captionhtml ).html() );
-						} else {
-							var caption = $( '<span />' ).append( img.attr( 'title' ) );
-						}
+						var _caption = ( captionhtml ) ? $( '#' + captionhtml ).html() : img.attr( 'title' );
+						var caption = $( '<span />' ).append( _caption );
 						if ( caption ) {
-							simpleSlideShowInner.after(
-								$( '<div class="simpleSlideShowCaptionWrapper" />' )
-									.html( caption )
-							);
+							simpleSlideShowCaptionWrapper.html( caption ).show();
 						}
 					}
 				},
 				createSimpleSlideShowNav: function() {
 					simpleSlideShowNav.append( $( '<ul />' ) );
-					for ( i = 1; i <= cnt; i ++ ) {
+					images.each( function( i, e ) {
 						if ( config.navStyle == 'string' ) {
 							var navhtml = i;
 						} else if ( config.navStyle == 'image' ) {
+							var src = '';
+							var thumbnail = $( e ).data( 'thumbnail' );
+							if ( typeof thumbnail !== 'undefined' ) {
+								if ( typeof $( '#' + thumbnail ).get( 0 ) !== 'undefined' ) {
+									if ( $( '#' + thumbnail ).get( 0 ).nodeName == 'IMG' )
+										src = $( '#' + thumbnail ).attr( 'src' );
+								}
+							}
+							if ( !src ) {
+								if ( e.nodeName == 'IFRAME' ) {
+									var _id = $( e ).attr( 'src' ).match( '\/\/www.youtube.com\/embed\/([^&#]*)' );
+									if ( _id !== null ) {
+										var id = _id[1];
+										src = 'http://img.youtube.com/vi/' + id + '/2.jpg';
+									}
+								} else {
+									src = canvas.find( 'img' ).eq( i ).attr( 'src' );
+								}
+							}
 							var navhtml = $( '<img />' ).attr( {
-								src: canvas.find( 'img' ).eq( i - 1 ).attr( 'src' ),
-								alt: i
-							} ).css( 'display', 'inline' );
+								src: src,
+								alt: i + 1
+							} );
 						}
 						if ( typeof navhtml !== 'undefined' ) {
 							var nav = $( '<li />' )
-									.addClass( 'nav_' + i )
-									.data( 'key', ( i - 1 ) )
+									.addClass( 'nav_' + ( i + 1 ) )
+									.data( 'key', ( i ) )
 									.append( navhtml );
 							simpleSlideShowNav.find( 'ul' ).append( nav );
 							canvas.append( simpleSlideShowNav );
 						}
-					}
+					} );
 				},
 				createSimpleSlideShowPrevNextNav: function() {
 					simpleSlideShowPrevNextNav.append( $( '<ul />' ) );

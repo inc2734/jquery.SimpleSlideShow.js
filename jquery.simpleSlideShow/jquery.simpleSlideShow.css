@@ -3,25 +3,53 @@
 ._defaultSize {
 	overflow: hidden;
 }
-.fade img {
+
+.fade img,
+.fade iframe {
 	display: none;
 }
-.simpleSlideShowWrapper {
+.slide {
+	overflow: hidden;
 }
+
+.simpleSlideShowWrapper {
+	margin: 0 auto;
+	position: relative;
+}
+
 .simpleSlideShowInner {
 	margin: 0 auto;
 	position: relative;
 	overflow: hidden;
+	z-index: 0;
 }
-.simpleSlideShowInner img {
+.simpleSlideShowInner img,
+.simpleSlideShowInner iframe {
+	z-index: 1;
 	position : absolute;
 	left: 0;
 	top: 0;
+}
+.simpleSlideShowInner iframe {
+	height: 100%;
+	width: 100%;
+}
+
+.simpleSlideShowCaptionWrapper {
+	display: none;
+	z-index: 1;
+}
+
+.simpleSlideShowNav,
+.simpleSlideShowPrevNextNav {
+	z-index: 1;
 }
 .simpleSlideShowNav ul li,
 .simpleSlideShowPrevNextNav ul li {
 	cursor: pointer;
 }
+
+.simpleSlideShowThumbnail,
 .simpleSlideShowCaption {
 	display: none;
 }
