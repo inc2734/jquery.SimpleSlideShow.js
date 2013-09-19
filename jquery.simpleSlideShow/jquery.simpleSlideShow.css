@@ -53,3 +53,14 @@
 .simpleSlideShowCaption {
 	display: none;
 }
+
+.simpleSlideShowWrapper,
+.simpleSlideShowInner,
+.simpleSlideShowNav,
+.simpleSlideShowPrevNextNav {
+	display: block !important;
+}
+.simpleSlideShowNav img,
+.simpleSlideShowPrevNextNav img {
+	display: inline !important;
+}

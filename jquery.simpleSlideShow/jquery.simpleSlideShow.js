@@ -57,8 +57,8 @@
 			var simpleSlideShow = canvas.find( '.simpleSlideShowWrapper' );
 			simpleSlideShow.wrapInner( '<div class="simpleSlideShowInner" />' );
 			var simpleSlideShowInner = canvas.find( '.simpleSlideShowInner' );
-			var cnt = simpleSlideShowInner.children( 'img, div' ).length;
-			var images = simpleSlideShowInner.children( 'img, div' );
+			var images = simpleSlideShowInner.find( '>img, >a img, >div' );
+			var cnt = images.length;
 			var timer = null;
 			var moving = false;
 			var now = 0;
@@ -272,8 +272,8 @@
 						var img = images.eq( key );
 						var captionhtml = img.data( 'caption' );
 						var _caption = ( captionhtml ) ? $( '#' + captionhtml ).html() : img.attr( 'title' );
-						var caption = $( '<span />' ).append( _caption );
-						if ( caption ) {
+						if ( _caption ) {
+							var caption = $( '<span />' ).append( _caption );
 							simpleSlideShowCaptionWrapper.html( caption ).show();
 						}
 					}
