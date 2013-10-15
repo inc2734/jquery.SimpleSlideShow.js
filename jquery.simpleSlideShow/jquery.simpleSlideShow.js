@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.7
+ * Version: 0.7.8
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
- * Created : Sep 30, 2011
- * Modified : September 17, 2013
+ * Created : September 30, 2011
+ * Modified : October 15, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -33,6 +33,7 @@
  * 			String		prev_text					前ナビの文字列
  * 			String		next_text					後ナビの文字列
  * 			Boolean		autoResize					自動リサイズ実行
+ * 			Function	afterMove					スライド後のコールバック関数
  */
 ;( function( $ ) {
 	$.fn.SimpleSlideShow = function( config ) {
@@ -46,7 +47,8 @@
 			showPrevNextNav: false,
 			prev_text      : '&laquo;',
 			next_text      : '&raquo;',
-			autoResize     : false
+			autoResize     : false,
+			afterMove      : function() {}
 		};
 		config = $.extend( defaults, config );
 
@@ -174,9 +176,9 @@
 						default :
 							methods.type.fade( key );
 					}
-					key ++;
-					var target = key % cnt;
-					methods.start( target );
+					// 再度statを呼びそこでlocationが呼ばれることで処理を繰り返す。
+					// ここでstartを呼ぶと、処理が完了していないのに実行されてしまうため
+					// 各処理の後に実行されるprocessAfterMove内でstartを呼ぶ。
 				},
 				type: {
 					fade: function( key ) {
@@ -233,6 +235,13 @@
 					if ( typeof simpleSlideShowPrevNextNav !== 'undefined' ) {
 						methods.setNavPrevKey();
 						methods.setNavNextKey();
+					}
+					config.afterMove();
+
+					key ++;
+					var target = key % cnt;
+					if ( canvas.data( 'simpleSlideShow:stop' ) !== true ) {
+						methods.start( target );
 					}
 				},
 				setNavPrevKey: function( key ) {
