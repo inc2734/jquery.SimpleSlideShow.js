@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.8
+ * Version: 0.7.9
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified : October 15, 2013
+ * Modified : October 21, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -163,14 +163,7 @@
 					clearTimeout( timer );
 					switch ( config.type ) {
 						case 'slide' :
-							switch ( slideDirection ) {
-								case 'left' :
-									methods.type.slideLeft( key );
-									break;
-								case 'right' :
-									methods.type.slideRight( key );
-									break;
-							}
+							methods.type.slide( key, slideDirection );
 							break;
 						case 'fade' :
 						default :
@@ -189,29 +182,31 @@
 							methods.processAfterMove( key );
 						} );
 					},
-					_slideBeforeInit: function( key ) {
+					slide: function( key, direction ) {
 						methods.processBeforeMove( key );
 						clickCount ++;
 						moving = true;
 						images.eq( key ).css( 'z-index', clickCount );
-					},
-					slideLeft: function( key ) {
-						methods.type._slideBeforeInit( key );
-						images.eq( key ).css( 'left', -simpleSlideShowInner.width() );
-						images.stop( true, true ).animate( {
-							'left': '+=' + simpleSlideShowInner.width()
-						}, config.duration, function() {
-							methods.processAfterMove( key );
-						} );
-					},
-					slideRight: function( key ) {
-						methods.type._slideBeforeInit( key );
-						slideDirection = 'left'
-						images.eq( key ).css( 'left', +simpleSlideShowInner.width() );
-						images.stop( true, true ).animate( {
-							'left': '-=' + simpleSlideShowInner.width()
-						}, config.duration, function() {
-							methods.processAfterMove( key );
+						switch ( direction ) {
+							case 'left' :
+								var position = -simpleSlideShowInner.width();
+								var adding = '+=';
+								break;
+							case 'right' :
+								var position = +simpleSlideShowInner.width();
+								var adding = '-='
+								slideDirection = 'left';
+								break;
+						}
+						images.eq( key ).css( 'left', position );
+						images.each( function( i, e ) {
+							$( e ).stop( true, true ).animate( {
+								'left': adding + simpleSlideShowInner.width()
+							}, config.duration, function() {
+								// images全て動かすので、1回だけ実行するように
+								if ( i === 0 )
+									methods.processAfterMove( key );
+							} );
 						} );
 					}
 				},
@@ -259,15 +254,18 @@
 				},
 				setSimpleSlideShowInnerSize: function() {
 					simpleSlideShowInner.css( {
-						width : ''
+						width : '',
+						height: ''
 					} );
+					var height = images.eq( 0 ).height();
+					var width = images.eq( 0 ).width();
 					simpleSlideShowInner.css( {
-						height: simpleSlideShowInner.find( 'img:first' ).height(),
-						width : simpleSlideShowInner.find( 'img:first' ).width()
+						height: height,
+						width : width
 					} );
 					simpleSlideShowInner.children( 'div' ).css( {
-						height: simpleSlideShowInner.find( 'img:first' ).height(),
-						width : simpleSlideShowInner.find( 'img:first' ).width()
+						height: height,
+						width : width
 					} );
 					if ( config.autoResize === true ) {
 						var simpleSlideShowTimer = setTimeout( function() {

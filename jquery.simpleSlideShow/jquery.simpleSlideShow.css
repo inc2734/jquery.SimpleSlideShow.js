@@ -4,8 +4,8 @@
 	overflow: hidden;
 }
 
-.fade .simpleSlideShowInner img,
-.fade .simpleSlideShowInner div {
+.fade .simpleSlideShowInner > img,
+.fade .simpleSlideShowInner > div {
 	display: none;
 }
 .slide {
@@ -23,14 +23,14 @@
 	overflow: hidden;
 	z-index: 0;
 }
-.simpleSlideShowInner img,
-.simpleSlideShowInner div {
+.simpleSlideShowInner > img,
+.simpleSlideShowInner > div {
 	z-index: 1;
 	position : absolute;
 	left: 0;
 	top: 0;
 }
-.simpleSlideShowInner iframe {
+.simpleSlideShowInner > iframe {
 	height: 100%;
 	width: 100%;
 }
