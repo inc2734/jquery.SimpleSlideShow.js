@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.9
+ * Version: 0.7.10
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified : October 21, 2013
+ * Modified : October 22, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -253,16 +253,19 @@
 					}
 				},
 				setSimpleSlideShowInnerSize: function() {
-					simpleSlideShowInner.css( {
-						width : '',
-						height: ''
-					} );
 					var height = images.eq( 0 ).height();
 					var width = images.eq( 0 ).width();
 					simpleSlideShowInner.css( {
 						height: height,
 						width : width
 					} );
+					var overwidth = 0;
+					if ( canvas.width() < simpleSlideShowInner.width() ) {
+						overwidth = simpleSlideShowInner.width() - canvas.width();
+						simpleSlideShowInner.css( {
+							left: -overwidth / 2
+						} );
+					}
 					simpleSlideShowInner.children( 'div' ).css( {
 						height: height,
 						width : width
