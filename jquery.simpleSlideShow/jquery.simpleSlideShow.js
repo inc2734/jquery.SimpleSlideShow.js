@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.10
+ * Version: 0.7.14
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified : October 22, 2013
+ * Modified: December 30, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -74,11 +74,11 @@
 				);
 				var simpleSlideShowCaptionWrapper = canvas.find( '.simpleSlideShowCaptionWrapper' );
 			}
-			if ( config.showNav === true ) {
+			if ( config.showNav === true && images.length > 1 ) {
 				canvas.append( '<div class="simpleSlideShowNav" />' );
 				var simpleSlideShowNav = canvas.find( '.simpleSlideShowNav' );
 			}
-			if ( config.showPrevNextNav === true ) {
+			if ( config.showPrevNextNav === true && images.length > 1 ) {
 				canvas.append( '<div class="simpleSlideShowPrevNextNav" />' );
 				var simpleSlideShowPrevNextNav = canvas.find( '.simpleSlideShowPrevNextNav' );
 			}
@@ -260,12 +260,14 @@
 						width : width
 					} );
 					var overwidth = 0;
+					var left = '';
 					if ( canvas.width() < simpleSlideShowInner.width() ) {
 						overwidth = simpleSlideShowInner.width() - canvas.width();
-						simpleSlideShowInner.css( {
-							left: -overwidth / 2
-						} );
+						left = -overwidth / 2;
 					}
+					simpleSlideShowInner.css( {
+						left: left
+					} );
 					simpleSlideShowInner.children( 'div' ).css( {
 						height: height,
 						width : width
@@ -281,7 +283,14 @@
 						simpleSlideShowCaptionWrapper.hide();
 						var img = images.eq( key );
 						var captionhtml = img.data( 'caption' );
-						var _caption = ( captionhtml ) ? $( '#' + captionhtml ).html() : img.attr( 'title' );
+						var _caption = '';
+						if ( captionhtml ) {
+							_caption = $( '#' + captionhtml ).html();
+						} else if ( img.attr( 'title' ) ) {
+							_caption = img.attr( 'title' );
+						} else if ( img.attr( 'alt' ) ) {
+							_caption = img.attr( 'alt' );
+						}
 						if ( _caption ) {
 							var caption = $( '<span />' ).append( _caption );
 							simpleSlideShowCaptionWrapper.html( caption ).show();
@@ -292,7 +301,7 @@
 					simpleSlideShowNav.append( $( '<ul />' ) );
 					images.each( function( i, e ) {
 						if ( config.navStyle == 'string' ) {
-							var navhtml = i;
+							var navhtml = ( i + 1 );
 						} else if ( config.navStyle == 'image' ) {
 							var src = '';
 							var thumbnail = $( e ).data( 'thumbnail' );
