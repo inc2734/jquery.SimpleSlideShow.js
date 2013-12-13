@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.14
+ * Version: 0.7.15
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified: December 30, 2013
+ * Modified: November 1, 2013
  * License: GPL2
  *
  * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
@@ -126,7 +126,7 @@
 					simpleSlideShowPrevNextNav.find( 'ul li' ).on( 'click', function() {
 						if ( moving === false && cnt > 1 ) {
 							var key = $( this ).data( 'key' );
-							if ( $( this ).hasClass( 'nav_prev' ) && config.type == 'slide' )
+							if ( $( this ).hasClass( 'nav_next' ) && config.type == 'slide' )
 								slideDirection = 'right';
 							methods.lotation( key );
 						}
@@ -240,10 +240,10 @@
 					}
 				},
 				setNavPrevKey: function( key ) {
-					simpleSlideShowPrevNextNav.find( 'ul li.nav_prev' ).data( 'key', now % cnt - 1 );
+					simpleSlideShowPrevNextNav.find( 'ul li.nav_prev' ).data( 'key', ( now + 1 ) % cnt );
 				},
 				setNavNextKey: function( key ) {
-					simpleSlideShowPrevNextNav.find( 'ul li.nav_next' ).data( 'key', ( now + 1 ) % cnt );
+					simpleSlideShowPrevNextNav.find( 'ul li.nav_next' ).data( 'key', now % cnt - 1 );
 				},
 				setCurrentClass: function( key ) {
 					if ( typeof simpleSlideShowNav !== 'undefined' ) {
