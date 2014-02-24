@@ -1,14 +1,14 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.15
+ * Version: 0.7.16
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified: November 1, 2013
+ * Modified: February 22, 2014
  * License: GPL2
  *
- * Copyright 2013 Takashi Kitajima (email : inc@2inc.org)
+ * Copyright 2014 Takashi Kitajima (email : inc@2inc.org)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -54,7 +54,6 @@
 
 		return this.each( function() {
 			var canvas = $( this );
-			canvas.removeClass( '_defaultSize' );
 			canvas.wrapInner( '<div class="simpleSlideShowWrapper" />' );
 			var simpleSlideShow = canvas.find( '.simpleSlideShowWrapper' );
 			simpleSlideShow.wrapInner( '<div class="simpleSlideShowInner" />' );
@@ -133,6 +132,7 @@
 					} );
 				}
 
+				canvas.removeClass( '_defaultSize' );
 				methods.setSimpleSlideShowInnerSize();
 				switch ( config.type ) {
 					case 'slide' :
