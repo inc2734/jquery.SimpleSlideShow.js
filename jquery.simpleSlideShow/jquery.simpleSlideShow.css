@@ -17,6 +17,13 @@
 	position: relative;
 }
 
+.autoResize .simpleSlideShowInner {
+	width: 100% !important;
+}
+.autoResize .simpleSlideShowInner img {
+	width: 100% !important;
+}
+
 .simpleSlideShowInner {
 	margin: 0 auto;
 	position: relative;

@@ -1,11 +1,11 @@
 /**
  * Plugin Name: jquery.SimpleSlideShow
  * Description: シンプルなスライドショーを実装するjQueryプラグイン
- * Version: 0.7.16
+ * Version: 0.7.17
  * Author: Takashi Kitajima
  * Author URI: http://2inc.org
  * Created : September 30, 2011
- * Modified: February 22, 2014
+ * Modified: April 10, 2014
  * License: GPL2
  *
  * Copyright 2014 Takashi Kitajima (email : inc@2inc.org)
@@ -23,17 +23,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * @param	String		Type( fade, slide )			切り替えアニメーション
- * 			Numeric		duration					アニメーション時間（ms）
- * 			Numeric		interval					次のアニメーションまでのインターバル（ms）
- * 			Boolean		showNav						ナビゲーションの表示
- * 			String		navStyle( string, image )	ナビゲーション種別
- * 			Boolean		showCaption					キャプションの表示
- * 			Boolean		showPrevNextNav				前後ナビの表示
- * 			String		prev_text					前ナビの文字列
- * 			String		next_text					後ナビの文字列
- * 			Boolean		autoResize					自動リサイズ実行
- * 			Function	afterMove					スライド後のコールバック関数
+ * @param string   Type( fade, slide )       切り替えアニメーション
+ * @param numeric  duration                  アニメーション時間（ms）
+ * @param numeric  interval                  次のアニメーションまでのインターバル（ms）
+ * @param bool     showNav                   ナビゲーションの表示
+ * @param string   navStyle( string, image ) ナビゲーション種別
+ * @param bool     showCaption               キャプションの表示
+ * @param bool     showPrevNextNav           前後ナビの表示
+ * @param string   prev_text                 前ナビの文字列
+ * @param string   next_text                 後ナビの文字列
+ * @param bool     autoResize                自動リサイズ実行（常に幅100%）
+ * @param function afterMove                 スライド後のコールバック関数
  */
 ;( function( $ ) {
 	$.fn.SimpleSlideShow = function( config ) {
@@ -82,6 +82,13 @@
 				var simpleSlideShowPrevNextNav = canvas.find( '.simpleSlideShowPrevNextNav' );
 			}
 			simpleSlideShow.addClass( config.type );
+
+			if ( config.autoResize === true ) {
+				simpleSlideShow.addClass( 'autoResize' );
+				$( window ).resize( function() {
+					methods.setSimpleSlideShowInnerSize();
+				} );
+			}
 
 			$( window ).load( function() {
 				var _player = [];
@@ -272,11 +279,6 @@
 						height: height,
 						width : width
 					} );
-					if ( config.autoResize === true ) {
-						var simpleSlideShowTimer = setTimeout( function() {
-							methods.setSimpleSlideShowInnerSize();
-						}, 1000 );
-					}
 				},
 				showCaption: function( key ) {
 					if ( config.showCaption === true ) {
